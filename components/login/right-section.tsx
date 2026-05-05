@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader } from "../ui/card";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export const RightSection = () => {
 
@@ -31,7 +32,7 @@ export const RightSection = () => {
     const handleLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
 
-        await fetch("http://localhost:8080/user/login", {
+        const response = await fetch("http://localhost:8080/user/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -41,13 +42,19 @@ export const RightSection = () => {
                 password: password
             })
         })
-            .then(response => response.json())
-            .then(data => {
-                console.log("Login successful:", data);
-            })
-            .catch(error => {
-                console.error("Error during login:", error);
-            });
+        if (response.status === 200) {
+            toast.success("Login realizado com sucesso");
+
+            const responseData = await response.json();
+
+            console.log ({"dados recebidos": responseData})
+
+            if (typeof window !== "undefined") {
+                // window.location.href = "/home";
+            }
+        } else {
+            toast.error("Email ou senha incorretos");
+        }
 
     }
 

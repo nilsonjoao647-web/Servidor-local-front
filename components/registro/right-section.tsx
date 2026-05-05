@@ -5,9 +5,9 @@ import { Card, CardContent, CardHeader } from "../ui/card";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export const RightSection = () => {
-
 
     const [nome, setNome] = useState("");
     const [numero_identificado, setNumero_identificado] = useState("");
@@ -84,7 +84,7 @@ export const RightSection = () => {
     const handleLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
 
-        await fetch("http://localhost:8080/user/login", {
+        const response = await fetch("http://localhost:8080/user/create", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -100,14 +100,16 @@ export const RightSection = () => {
                 role: role
             })
         })
-            .then(response => response.json())
-            .then(data => {
-                console.log("Login successful:", data);
-            })
-            .catch(error => {
-                console.error("Error during login:", error);
-            });
 
+        if (response.status === 200) {
+            toast.success("Utilizador criado com sucesso");
+
+            if (typeof window !== "undefined") {
+                window.location.href = "/login";
+            }
+        } else {
+            toast.error("Não foi possível criar conta, tente novamente.");
+        }
     }
 
     console.log({ Nome: nome, Numero_identificado: numero_identificado, data_nascimento: data_nascimento, pais: pais, Email: email, localidade: localidade, role: role });
@@ -200,15 +202,12 @@ export const RightSection = () => {
                     </div>
                     <div>
                         <span>Don´t have an account yet?</span>
-                        <Link href="/registro" className="text-[#13A4EC] font-semibold">
+                        <Link href="/login" className="text-[#13A4EC] font-semibold">
                             Create Account
                         </Link>
                     </div>
-
                 </CardContent>
             </Card>
-
         </div>
-
     );
 }
